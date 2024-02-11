@@ -9,5 +9,5 @@ $ .wtf/install-dependencies.sh
 ## How to use terragrunt
 
 ```sh
-$ terragrunt "[plan|apply|destroy|etc...]" --terragrunt-config example/stages/europe-infra.hcl
+$ terragrunt "[plan|apply|destroy|etc...]" --terragrunt-config examples/stages/europe-infra.hcl
 ```

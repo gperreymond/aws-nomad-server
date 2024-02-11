@@ -1,5 +1,5 @@
 data "aws_secretsmanager_secret" "nomad_certificats" {
-  name = "nomad-server-certs"
+  name = "nomad-server-${var.datacenter}-certs"
 }
 
 data "aws_secretsmanager_secret_version" "nomad_certificats" {
