@@ -1,4 +1,4 @@
-variable "tls_ca_command_line" {
+variable "aws_region" {
   type    = string
-  default = "nomad tls ca create"
+  default = "eu-west-1"
 }

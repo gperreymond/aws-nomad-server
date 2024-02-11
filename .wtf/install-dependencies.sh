@@ -1,5 +1,6 @@
 #!/bin/bash
 
+asdf plugin add awscli
 asdf plugin add jq
 asdf plugin add nomad
 asdf plugin add terraform
