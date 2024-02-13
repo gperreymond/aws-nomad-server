@@ -1,10 +1,9 @@
 locals {
-  aws_region                   = "eu-west-1"
-  datacenter                   = "europe-infra"
-  tls_ca_command_line          = "tls ca create"
-  tls_cert_server_command_line = "tls cert create -server -region global"
-  tls_cert_client_command_line = "tls cert create -client"
-  tls_cert_cli_command_line    = "tls cert create -cli"
+  tfvars = {
+    aws_region       = "eu-west-1"
+    nomad_datacenter = "europe-infra"
+    nomad_region     = "eu-west-1"
+  }
 }
 
 terraform {
@@ -14,12 +13,9 @@ terraform {
     commands = ["apply", "plan"]
     execute = [
       "./generate-nomad-certificats.sh",
-      "-aws_region", "${local.aws_region}",
-      "-datacenter", "${local.datacenter}",
-      "-tls_ca_command_line", "${local.tls_ca_command_line}",
-      "-tls_cert_server_command_line", "${local.tls_cert_server_command_line}",
-      "-tls_cert_client_command_line", "${local.tls_cert_client_command_line}",
-      "-tls_cert_cli_command_line", "${local.tls_cert_cli_command_line}"
+      "-aws_region", "${local.tfvars.aws_region}",
+      "-region", "${local.tfvars.nomad_region}",
+      "-datacenter", "${local.tfvars.nomad_datacenter}"
     ]
   }
 }
@@ -31,14 +27,11 @@ remote_state {
     if_exists = "overwrite_terragrunt"
   }
   config = {
-    bucket  = "metron-hashistack-terraform"
+    bucket  = "subaccounts-terraform-states"
     key     = "europe-infra/aws-nomad-server.tfstate"
-    region  = "eu-west-1"
+    region  = "eu-west-3"
     encrypt = true
   }
 }
 
-inputs = {
-  aws_region = local.aws_region
-  datacenter = local.datacenter
-}
+inputs = local.tfvars

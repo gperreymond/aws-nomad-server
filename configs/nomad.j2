@@ -1,0 +1,40 @@
+region             = "{{region}}"
+datacenter         = "{{datacenter}}"
+data_dir           = "/opt/nomad"
+log_level          = "INFO"
+log_json           = true
+leave_on_interrupt = false
+leave_on_terminate = true
+acl {
+  enabled = true
+}
+telemetry {
+  publish_allocation_metrics = true
+  publish_node_metrics       = true
+}
+autopilot {
+  cleanup_dead_servers = true
+}
+server {
+  enabled          = true
+  bootstrap_expect = 3
+  encrypt          = "{{encrypt}}"
+  server_join {
+    retry_join = [
+      "provider=aws tag_key=NomadDatacenter tag_value={{datacenter}}"
+    ]
+  }
+}
+client {
+  enabled = false
+}
+tls {
+  http                   = true
+  rpc                    = true
+  ca_file                = "/home/ssm-user/nomad/certs/nomad_agent_ca"
+  cert_file              = "/home/ssm-user/nomad/certs/server_nomad"
+  key_file               = "/home/ssm-user/nomad/certs/server_nomad_key"
+  verify_server_hostname = true
+  verify_https_client    = false
+}
+bind_addr = "0.0.0.0"

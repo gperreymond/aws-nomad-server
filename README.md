@@ -1,5 +1,7 @@
 # AWS NOMAD SERVER
 
+* https://developer.hashicorp.com/nomad/tutorials/transport-security/security-enable-tls
+
 ## How to use asdf
 
 ```sh
