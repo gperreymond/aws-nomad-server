@@ -1,6 +1,6 @@
-data "aws_availability_zones" "this" {}
+data "aws_availability_zones" "available" {}
 
-data "aws_ami" "this" {
+data "aws_ami" "latest_ubuntu" {
   most_recent = true
   filter {
     name   = "name"

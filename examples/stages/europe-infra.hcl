@@ -1,8 +1,12 @@
 locals {
   tfvars = {
-    aws_region       = "eu-west-1"
-    nomad_datacenter = "europe-infra"
-    nomad_region     = "eu-west-1"
+    aws_region = "eu-west-1"
+    aws_default_tags = {
+      ManagedBy = "Terraform"
+    }
+    aws_ssm_bucket_region = "eu-west-1"
+    nomad_datacenter      = "europe-infra"
+    nomad_region          = "eu-west-1"
   }
 }
 

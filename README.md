@@ -1,6 +1,9 @@
 # AWS NOMAD SERVER
 
 * https://developer.hashicorp.com/nomad/tutorials/transport-security/security-enable-tls
+* https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest
+* https://registry.terraform.io/modules/terraform-aws-modules/autoscaling/aws/latest
+* https://registry.terraform.io/modules/terraform-aws-modules/s3-bucket/aws/latest
 
 ## How to use asdf
 

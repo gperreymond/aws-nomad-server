@@ -6,10 +6,10 @@ output "consul" {
   value = local.consul
 }
 
-output "nomad_config_hcl" {
-  value = data.jinja_template.nomad_config_hcl.result
+output "vpc_id" {
+  value = module.vpc.vpc_id
 }
 
-output "consul_config_hcl" {
-  value = data.jinja_template.consul_config_hcl.result
+output "vpc_arn" {
+  value = module.vpc.vpc_arn
 }
