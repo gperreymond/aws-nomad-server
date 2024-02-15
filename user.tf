@@ -14,9 +14,14 @@ resource "aws_iam_role" "autoscaling" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "ssm" {
+  role       = aws_iam_role.autoscaling.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 resource "aws_iam_role_policy" "ec2" {
   name = "test_policy"
-  role = aws_iam_role.autoscaling.id
+  role = aws_iam_role.autoscaling.name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -33,7 +38,7 @@ resource "aws_iam_role_policy" "ec2" {
 
 resource "aws_iam_role_policy" "autoscaling" {
   name = "test_policy"
-  role = aws_iam_role.autoscaling.id
+  role = aws_iam_role.autoscaling.name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -50,7 +55,7 @@ resource "aws_iam_role_policy" "autoscaling" {
 
 resource "aws_iam_role_policy" "ssm_bucket" {
   name = "test_policy"
-  role = aws_iam_role.autoscaling.id
+  role = aws_iam_role.autoscaling.name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -68,7 +73,7 @@ resource "aws_iam_role_policy" "ssm_bucket" {
 
 resource "aws_iam_role_policy" "secretsmanager" {
   name = "test_policy"
-  role = aws_iam_role.autoscaling.id
+  role = aws_iam_role.autoscaling.name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
