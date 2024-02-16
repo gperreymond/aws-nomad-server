@@ -1,27 +1,6 @@
-resource "aws_iam_role" "autoscaling" {
-  name = "nomad-server-${local.nomad.datacenter}"
-  assume_role_policy = jsonencode({
-    "Version" : "2012-10-17",
-    "Statement" : [
-      {
-        "Effect" : "Allow",
-        "Principal" : {
-          "Service" : "ec2.amazonaws.com"
-        },
-        "Action" : "sts:AssumeRole"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "ssm" {
-  role       = aws_iam_role.autoscaling.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
-
 resource "aws_iam_role_policy" "ec2" {
-  name = "test_policy"
-  role = aws_iam_role.autoscaling.name
+  name = "nomad-server-${local.nomad.datacenter}-ec2"
+  role = module.autoscaling.iam_role_name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -37,8 +16,8 @@ resource "aws_iam_role_policy" "ec2" {
 }
 
 resource "aws_iam_role_policy" "autoscaling" {
-  name = "test_policy"
-  role = aws_iam_role.autoscaling.name
+  name = "nomad-server-${local.nomad.datacenter}-autoscaling"
+  role = module.autoscaling.iam_role_name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -54,8 +33,8 @@ resource "aws_iam_role_policy" "autoscaling" {
 }
 
 resource "aws_iam_role_policy" "ssm_bucket" {
-  name = "test_policy"
-  role = aws_iam_role.autoscaling.name
+  name = "nomad-server-${local.nomad.datacenter}-ssm-bucket"
+  role = module.autoscaling.iam_role_name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -65,15 +44,15 @@ resource "aws_iam_role_policy" "ssm_bucket" {
           "s3:GetObjectVersion"
         ],
         Effect = "Allow"
-        Resource : "arn:aws:s3:::${module.ssm_bucket.s3_bucket_id}-*/*"
+        Resource : "arn:aws:s3:::${module.ssm_bucket.s3_bucket_id}/*"
       }
     ]
   })
 }
 
 resource "aws_iam_role_policy" "secretsmanager" {
-  name = "test_policy"
-  role = aws_iam_role.autoscaling.name
+  name = "nomad-server-${local.nomad.datacenter}-secretsmanager"
+  role = module.autoscaling.iam_role_name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -84,7 +63,7 @@ resource "aws_iam_role_policy" "secretsmanager" {
           "secretsmanager:ListSecrets"
         ],
         Effect = "Allow"
-        Resource : "arn:aws:secretsmanager:*:*:secret:$nomad-server-${local.nomad.datacenter}-*"
+        Resource : "arn:aws:secretsmanager:*:*:secret:nomad-server-${local.nomad.datacenter}-*"
       }
     ]
   })

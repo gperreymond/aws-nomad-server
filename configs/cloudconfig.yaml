@@ -1,0 +1,31 @@
+## template: jinja
+#cloud-config
+datasource:
+  Ec2:
+    timeout : 50
+    max_wait : 120
+    metadata_urls:
+      - http://169.254.169.254/2021-03-23
+
+package_update: true
+packages:
+- coreutils
+- binfmt-support
+snap:
+  commands:
+  - snap install amazon-ssm-agent --classic
+  - snap install aws-cli --classic
+
+write_files:
+- path: /home/ssm-user/upgrade.sh
+  permissions: '0755'
+  content: |
+    #!/bin/bash
+    aws s3 cp s3://{{ds.meta_data.tags.instance.SSMBucketName}}/{{ds.meta_data.tags.instance.SSMBucketPath}} - | bash
+
+runcmd:
+  - |
+    # disable swap
+    sysctl -w vm.swappiness=0
+    echo "vm.swappiness = 0" | tee -a /etc/sysctl.conf
+    swapoff -a
