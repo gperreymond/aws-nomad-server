@@ -1,6 +1,6 @@
 awscli 2.13.5
 cue 0.7.0
 jq 1.7
-nomad 1.7.4
+nomad 1.7.5
 terraform 1.7.3
 terragrunt 0.55.1
