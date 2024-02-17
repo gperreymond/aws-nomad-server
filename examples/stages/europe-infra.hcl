@@ -31,7 +31,7 @@ remote_state {
   }
   config = {
     bucket  = "subaccounts-terraform-states"
-    key     = "europe-infra/aws-nomad-server.tfstate"
+    key     = "europe-infra/aws-nomad-servers.tfstate"
     region  = "eu-west-3"
     encrypt = true
   }
