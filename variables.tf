@@ -24,6 +24,11 @@ variable "aws_vpc_id" {
   default     = ""
 }
 
+variable "aws_instance_type" {
+  type    = string
+  default = "m5a.large"
+}
+
 variable "nomad_version" {
   type    = string
   default = "1.7.4"

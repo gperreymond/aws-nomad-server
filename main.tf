@@ -4,7 +4,7 @@ module "vpc" {
 
   create_vpc = var.aws_create_vpc
 
-  name               = local.nomad.datacenter
+  name               = "nomad-server-${local.nomad.datacenter}"
   cidr               = local.vpc_cidr
   azs                = local.azs
   enable_nat_gateway = true
@@ -29,7 +29,7 @@ module "security_group" {
 
   create = true
 
-  name   = local.nomad.datacenter
+  name   = "nomad-server-${local.nomad.datacenter}"
   vpc_id = module.vpc.vpc_id
 }
 
@@ -39,22 +39,18 @@ module "autoscaling" {
 
   create = true
 
-  name                        = local.nomad.datacenter
+  name                        = "nomad-server-${local.nomad.datacenter}"
   update_default_version      = true
   min_size                    = 3
   max_size                    = 9
   ebs_optimized               = true
   enable_monitoring           = true
   image_id                    = data.aws_ami.latest_ubuntu.id
-  instance_type               = "m5a.large"
+  instance_type               = var.aws_instance_type
   vpc_zone_identifier         = module.vpc.private_subnets
-  create_iam_instance_profile = true
-  iam_role_name               = "nomad-server-${local.nomad.datacenter}-role"
-  iam_role_path               = "/ec2/"
-  iam_role_policies = {
-    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  }
-  user_data = filebase64("${path.module}/configs/cloudconfig.yaml")
+  create_iam_instance_profile = false
+  iam_instance_profile_arn    = aws_iam_instance_profile.this.arn
+  user_data                   = filebase64("${path.module}/configs/cloudconfig.yaml")
   metadata_options = {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
@@ -62,10 +58,32 @@ module "autoscaling" {
     instance_metadata_tags      = "enabled"
   }
   security_groups = [module.security_group.security_group_id]
-  tags = {
+  block_device_mappings = [{
+    # Root volume
+    device_name = "/dev/xvda"
+    no_device   = 0
+    ebs = {
+      delete_on_termination = true
+      encrypted             = true
+      volume_size           = 20
+      volume_type           = "gp3"
+    }
+  }]
+  autoscaling_group_tags = {
     SSMBucketName = module.ssm_bucket.s3_bucket_id
     SSMBucketPath = "scripts/nomad.sh"
   }
+
+  depends_on = [
+    # instance profile
+    aws_iam_instance_profile.this,
+    # security group
+    aws_vpc_security_group_egress_rule.nomad_egress,
+    aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4646_tcp,
+    aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4647_tcp,
+    aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4648_tcp,
+    aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4648_udp
+  ]
 }
 
 resource "random_string" "ssm_bucket_suffix" {

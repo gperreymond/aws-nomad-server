@@ -1,6 +1,27 @@
+resource "aws_iam_role" "this" {
+  name = "nomad-server-${local.nomad.datacenter}"
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Principal" : {
+          "Service" : "ec2.amazonaws.com"
+        },
+        "Action" : "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ssm" {
+  role       = aws_iam_role.this.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 resource "aws_iam_role_policy" "ec2" {
   name = "nomad-server-${local.nomad.datacenter}-ec2"
-  role = module.autoscaling.iam_role_name
+  role = aws_iam_role.this.name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -17,7 +38,7 @@ resource "aws_iam_role_policy" "ec2" {
 
 resource "aws_iam_role_policy" "autoscaling" {
   name = "nomad-server-${local.nomad.datacenter}-autoscaling"
-  role = module.autoscaling.iam_role_name
+  role = aws_iam_role.this.name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -34,7 +55,7 @@ resource "aws_iam_role_policy" "autoscaling" {
 
 resource "aws_iam_role_policy" "ssm_bucket" {
   name = "nomad-server-${local.nomad.datacenter}-ssm-bucket"
-  role = module.autoscaling.iam_role_name
+  role = aws_iam_role.this.name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -52,7 +73,7 @@ resource "aws_iam_role_policy" "ssm_bucket" {
 
 resource "aws_iam_role_policy" "secretsmanager" {
   name = "nomad-server-${local.nomad.datacenter}-secretsmanager"
-  role = module.autoscaling.iam_role_name
+  role = aws_iam_role.this.name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -69,3 +90,15 @@ resource "aws_iam_role_policy" "secretsmanager" {
   })
 }
 
+resource "aws_iam_instance_profile" "this" {
+  name = "nomad-server-${local.nomad.datacenter}"
+  role = aws_iam_role.this.name
+
+  depends_on = [
+    aws_iam_role_policy_attachment.ssm,
+    aws_iam_role_policy.autoscaling,
+    aws_iam_role_policy.ec2,
+    aws_iam_role_policy.ssm_bucket,
+    aws_iam_role_policy.secretsmanager
+  ]
+}

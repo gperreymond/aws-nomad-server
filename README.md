@@ -15,5 +15,8 @@ $ .wtf/install-dependencies.sh
 ## How to use terragrunt
 
 ```sh
+# linter
+$ terraform fmt && terragrunt hclfmt
+# terragrunt
 $ terragrunt "[plan|apply|destroy|etc...]" --terragrunt-config examples/stages/europe-infra.hcl
 ```
