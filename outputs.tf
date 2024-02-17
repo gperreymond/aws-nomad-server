@@ -1,15 +1,11 @@
-output "nomad" {
-  value = local.nomad
+output "aws_region" {
+  value = var.aws_region
 }
 
-output "consul" {
-  value = local.consul
+output "ssm_document_name" {
+  value = aws_ssm_document.this.name
 }
 
-output "vpc_id" {
-  value = module.vpc.vpc_id
-}
-
-output "vpc_arn" {
-  value = module.vpc.vpc_arn
+output "nomad_datacenter" {
+  value = local.nomad.datacenter
 }

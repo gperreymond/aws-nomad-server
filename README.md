@@ -19,4 +19,6 @@ $ .wtf/install-dependencies.sh
 $ terraform fmt && terragrunt hclfmt
 # terragrunt
 $ terragrunt "[plan|apply|destroy|etc...]" --terragrunt-config examples/stages/europe-infra.hcl
+# how to upgrade or provisionning nomad servers from inside
+$ ./nomad-servers-upgrade.sh examples/stages/europe-infra.hcl
 ```

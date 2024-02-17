@@ -29,6 +29,11 @@ variable "aws_instance_type" {
   default = "m5a.large"
 }
 
+variable "cni_plugins_version" {
+  type    = string
+  default = "1.4.0"
+}
+
 variable "nomad_version" {
   type    = string
   default = "1.7.5"

@@ -28,9 +28,10 @@ resource "aws_secretsmanager_secret_version" "envs" {
   secret_id = aws_secretsmanager_secret.envs.id
   secret_string = jsonencode(
     merge({
-      APP_NOMAD_VERSION = local.nomad.version
+      NOMAD_VERSION       = local.nomad.version
+      CNI_PLUGINS_VERSION = var.cni_plugins_version
       }, local.consul.enabled == true ? {
-      APP_CONSUL_VERSION = local.consul.version
+      CONSUL_VERSION = local.consul.version
       } : {}
     )
   )

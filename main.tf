@@ -69,10 +69,12 @@ module "autoscaling" {
       volume_type           = "gp3"
     }
   }]
-  autoscaling_group_tags = {
-    SSMBucketName = module.ssm_bucket.s3_bucket_id
-    SSMBucketPath = "scripts/nomad.sh"
-  }
+  tags = merge(var.aws_default_tags, {
+    NomadDatacenter = local.nomad.datacenter
+    NomadType       = "server"
+    SSMBucketName   = module.ssm_bucket.s3_bucket_id
+    SSMBucketPath   = "scripts/nomad.sh"
+  })
 
   depends_on = [
     # instance profile
@@ -106,8 +108,8 @@ module "ssm_bucket" {
 }
 
 resource "aws_s3_object" "nomad_script" {
-  bucket = module.ssm_bucket.s3_bucket_id
-  key    = "scripts/nomad.sh"
-  source = "${path.module}/configs/nomad.sh"
-  etag   = filemd5("${path.module}/configs/nomad.sh")
+  bucket      = module.ssm_bucket.s3_bucket_id
+  key         = "scripts/nomad.sh"
+  source      = "${path.module}/configs/nomad.sh"
+  source_hash = filemd5("${path.module}/configs/nomad.sh")
 }
