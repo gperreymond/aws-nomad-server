@@ -11,4 +11,5 @@ locals {
     version    = var.consul_version
     datacenter = var.consul_datacenter
   }
+  aws_vpc_id = module.vpc.vpc_id
 }

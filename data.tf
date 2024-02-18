@@ -1,5 +1,9 @@
 data "aws_availability_zones" "available" {}
 
+data "aws_route53_zone" "this" {
+  zone_id = var.aws_zone_id
+}
+
 data "aws_ami" "latest_ubuntu" {
   most_recent = true
   filter {

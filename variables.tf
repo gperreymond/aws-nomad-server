@@ -7,6 +7,10 @@ variable "aws_default_tags" {
   default = {}
 }
 
+variable "aws_zone_id" {
+  type = string
+}
+
 variable "aws_create_vpc" {
   type    = bool
   default = true

@@ -23,6 +23,75 @@ module "vpc" {
   database_subnet_ipv6_prefixes                 = [6, 7, 8]
 }
 
+module "acm" {
+  source  = "terraform-aws-modules/acm/aws"
+  version = "5.0.0"
+
+  create_certificate = true
+
+  domain_name = "nomad-${local.nomad.datacenter}.${data.aws_route53_zone.this.name}"
+
+  zone_id             = var.aws_zone_id
+  validation_method   = "DNS"
+  wait_for_validation = true
+}
+
+module "alb" {
+  source  = "terraform-aws-modules/alb/aws"
+  version = "9.7.0"
+
+  create = true
+
+  name                 = "nomad-server-${local.nomad.datacenter}"
+  vpc_id               = local.aws_vpc_id
+  subnets              = module.vpc.public_subnets
+  preserve_host_header = true
+  security_group_ingress_rules = {
+    all_https = {
+      from_port   = 443
+      to_port     = 443
+      ip_protocol = "tcp"
+      description = "HTTPS web traffic"
+      cidr_ipv4   = "0.0.0.0/0"
+    }
+  }
+  security_group_egress_rules = {
+    all = {
+      ip_protocol = "-1"
+      cidr_ipv4   = "0.0.0.0/0"
+    }
+  }
+}
+
+resource "aws_lb_target_group" "this" {
+  name        = "nomad-server-${local.nomad.datacenter}"
+  port        = 4646
+  protocol    = "HTTPS"
+  vpc_id      = local.aws_vpc_id
+  target_type = "instance"
+  health_check {
+    path                = "/v1/status/leader"
+    port                = 4646
+    protocol            = "HTTPS"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    matcher             = "200"
+  }
+}
+
+resource "aws_lb_listener" "this" {
+  load_balancer_arn = module.alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn   = module.acm.acm_certificate_arn
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.this.arn
+  }
+}
+
 module "security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "5.1.0"
@@ -30,7 +99,7 @@ module "security_group" {
   create = true
 
   name   = "nomad-server-${local.nomad.datacenter}"
-  vpc_id = module.vpc.vpc_id
+  vpc_id = local.aws_vpc_id
 }
 
 module "autoscaling" {
@@ -57,7 +126,9 @@ module "autoscaling" {
     http_put_response_hop_limit = 1
     instance_metadata_tags      = "enabled"
   }
-  security_groups = [module.security_group.security_group_id]
+  security_groups                  = [module.security_group.security_group_id]
+  create_traffic_source_attachment = true
+  traffic_source_identifier        = aws_lb_target_group.this.arn
   block_device_mappings = [{
     # Root volume
     device_name = "/dev/xvda"
@@ -112,4 +183,15 @@ resource "aws_s3_object" "nomad_script" {
   key         = "scripts/nomad.sh"
   source      = "${path.module}/configs/nomad.sh"
   source_hash = filemd5("${path.module}/configs/nomad.sh")
+}
+
+resource "aws_route53_record" "external" {
+  zone_id = var.aws_zone_id
+  name    = "nomad-${local.nomad.datacenter}.${data.aws_route53_zone.this.name}"
+  type    = "A"
+  alias {
+    name                   = module.alb.dns_name
+    zone_id                = module.alb.zone_id
+    evaluate_target_health = true
+  }
 }

@@ -1,6 +1,7 @@
 locals {
   tfvars = {
-    aws_region = "eu-west-1"
+    aws_region  = "eu-west-1"
+    aws_zone_id = "Z04556983LHLUI6UUOJ30"
     aws_default_tags = {
       ManagedBy = "Terraform"
     }
