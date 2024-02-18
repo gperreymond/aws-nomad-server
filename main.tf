@@ -110,8 +110,8 @@ module "autoscaling" {
 
   name                        = "nomad-server-${local.nomad.datacenter}"
   update_default_version      = true
-  min_size                    = 3
-  max_size                    = 9
+  min_size                    = local.nomad.bootstrap_expect
+  max_size                    = local.nomad.bootstrap_expect * 3
   ebs_optimized               = true
   enable_monitoring           = true
   image_id                    = data.aws_ami.latest_ubuntu.id

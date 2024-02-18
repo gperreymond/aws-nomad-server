@@ -53,6 +53,11 @@ variable "nomad_datacenter" {
   default = "dc1"
 }
 
+variable "nomad_bootstrap_expect" {
+  type    = number
+  default = 3
+}
+
 variable "consul_enabled" {
   type    = bool
   default = false

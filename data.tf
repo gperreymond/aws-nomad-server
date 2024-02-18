@@ -24,6 +24,7 @@ data "jinja_template" "nomad_config_hcl" {
     data = <<-EOF
 region: "${local.nomad.region}"
 datacenter: "${local.nomad.datacenter}"
+bootstrap_expect: "${local.nomad.bootstrap_expect}"
 encrypt: "${random_id.gossip_encryption_key.b64_std}"
 EOF
   }
