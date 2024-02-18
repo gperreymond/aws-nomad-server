@@ -16,7 +16,7 @@ terraform {
   before_hook "before_hook_generate_nomad_certificats" {
     commands = ["apply", "plan"]
     execute = [
-      "./generate-nomad-certificats.sh",
+      "./nomad-generate-certificats.sh",
       "-aws_region", "${local.tfvars.aws_region}",
       "-region", "${local.tfvars.nomad_region}",
       "-datacenter", "${local.tfvars.nomad_datacenter}"
