@@ -54,6 +54,7 @@ echo ""
 
 if aws secretsmanager describe-secret --region $aws_region --secret-id $aws_secret_name &> /dev/null; then
     echo "[WARN] the secret exists"
+    echo ""
     exit 0
 else
     echo "[INFO] the secret does not exist"

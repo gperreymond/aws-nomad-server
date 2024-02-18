@@ -25,4 +25,6 @@ $ .wtf/linter.sh
 $ terragrunt "[plan|apply|destroy|etc...]" --terragrunt-config examples/stages/europe-infra.hcl
 # how to upgrade or provisionning nomad servers from inside
 $ ./nomad-upgrade.sh -stage examples/stages/europe-infra.hcl
+# how to bootstrap nomad servers
+$ ./nomad-bootstrap.sh -stage examples/stages/europe-infra.hcl
 ```

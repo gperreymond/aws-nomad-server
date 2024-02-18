@@ -6,6 +6,10 @@ output "ssm_document_name" {
   value = aws_ssm_document.this.name
 }
 
+output "nomad_region" {
+  value = local.nomad.region
+}
+
 output "nomad_datacenter" {
   value = local.nomad.datacenter
 }
