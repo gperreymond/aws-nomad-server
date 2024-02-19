@@ -61,6 +61,7 @@ module "alb" {
       cidr_ipv4   = "0.0.0.0/0"
     }
   }
+  enable_deletion_protection = false
 }
 
 resource "aws_lb_target_group" "this" {
