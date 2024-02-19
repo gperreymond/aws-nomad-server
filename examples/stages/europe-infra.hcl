@@ -1,27 +1,18 @@
 locals {
   tfvars = {
-    aws_region  = "eu-west-1"
-    aws_zone_id = "Z04556983LHLUI6UUOJ30"
+    aws_region   = "eu-west-1"
+    aws_zone_id  = "Z04556983LHLUI6UUOJ30"
+    aws_vpc_cidr = "10.100.0.0/16"
     aws_default_tags = {
       ManagedBy = "Terraform"
     }
-    nomad_datacenter = "europe-infra"
-    nomad_region     = "eu-west-1"
+    nomad_region     = "europe"
+    nomad_datacenter = "infra"
   }
 }
 
 terraform {
   source = ".//"
-  // source = "git::https://github.com/gperreymond/aws-nomad-server.git?ref=main"
-  before_hook "before_hook_generate_nomad_certificats" {
-    commands = ["apply", "plan"]
-    execute = [
-      "./nomad-generate-certificats.sh",
-      "-aws_region", "${local.tfvars.aws_region}",
-      "-region", "${local.tfvars.nomad_region}",
-      "-datacenter", "${local.tfvars.nomad_datacenter}"
-    ]
-  }
 }
 
 remote_state {

@@ -42,7 +42,7 @@ echo ""
 # get all instances ids from tags
 echo "[INFO] try to find instances..."
 instance_ids=$(aws ec2 describe-instances --region $aws_region \
-                --filters "Name=tag:NomadDatacenter,Values=$nomad_datacenter" "Name=tag:NomadType,Values=server" "Name=instance-state-name,Values=running" \
+                --filters "Name=tag:NomadRegion,Values=$nomad_region" "Name=tag:NomadDatacenter,Values=$nomad_datacenter" "Name=tag:NomadType,Values=server" "Name=instance-state-name,Values=running" \
                 --query 'Reservations[*].Instances[*].InstanceId' \
                 --output text)
 

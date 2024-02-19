@@ -14,6 +14,6 @@ output "nomad_datacenter" {
   value = local.nomad.datacenter
 }
 
-output "aws_route53_record" {
+output "nomad_address" {
   value = "https://${aws_route53_record.external.name}"
 }

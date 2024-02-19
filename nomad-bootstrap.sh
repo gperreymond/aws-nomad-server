@@ -23,9 +23,9 @@ outputs=$(terragrunt output -json --terragrunt-config "${stage}")
 aws_region=$(echo $outputs | jq -r '.aws_region.value')
 nomad_region=$(echo $outputs | jq -r '.nomad_region.value')
 nomad_datacenter=$(echo $outputs | jq -r '.nomad_datacenter.value')
-nomad_address=$(echo $outputs | jq -r '.aws_route53_record.value')
-aws_secret_certs_name="nomad-server-$nomad_datacenter-certs"
-aws_secret_name="nomad-server-$nomad_datacenter-boostrap"
+nomad_address=$(echo $outputs | jq -r '.nomad_address.value')
+
+aws_secret_name="nomad-server-$nomad_region-$nomad_datacenter-bootstrap"
 
 # -----------------------
 # RESUME
@@ -49,7 +49,7 @@ echo ""
 if aws secretsmanager describe-secret --region $aws_region --secret-id $aws_secret_name &> /dev/null; then
     echo "[WARN] the secret exists"
     echo ""
-    exit 0
+    #exit 0
 else
     echo "[INFO] the secret does not exist"
 fi

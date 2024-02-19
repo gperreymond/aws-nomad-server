@@ -21,7 +21,7 @@ server {
   encrypt          = "{{encrypt}}"
   server_join {
     retry_join = [
-      "provider=aws tag_key=NomadDatacenter tag_value={{datacenter}}"
+      "provider=aws tag_key=NomadRetryJoin tag_value={{region}}-{{datacenter}}"
     ]
   }
 }

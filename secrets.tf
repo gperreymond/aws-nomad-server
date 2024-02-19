@@ -3,7 +3,7 @@ resource "random_id" "gossip_encryption_key" {
 }
 
 resource "aws_secretsmanager_secret" "configs" {
-  name                    = "nomad-server-${local.nomad.datacenter}-configs"
+  name                    = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}-configs"
   recovery_window_in_days = 0
 }
 
@@ -20,7 +20,7 @@ resource "aws_secretsmanager_secret_version" "configs" {
 }
 
 resource "aws_secretsmanager_secret" "envs" {
-  name                    = "nomad-server-${local.nomad.datacenter}-envs"
+  name                    = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}-envs"
   recovery_window_in_days = 0
 }
 

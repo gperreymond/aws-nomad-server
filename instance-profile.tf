@@ -1,5 +1,5 @@
 resource "aws_iam_role" "this" {
-  name = "nomad-server-${local.nomad.datacenter}"
+  name = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}"
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -20,7 +20,7 @@ resource "aws_iam_role_policy_attachment" "ssm" {
 }
 
 resource "aws_iam_role_policy" "ec2" {
-  name = "nomad-server-${local.nomad.datacenter}-ec2"
+  name = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}-ec2"
   role = aws_iam_role.this.name
   policy = jsonencode({
     Version = "2012-10-17"
@@ -37,7 +37,7 @@ resource "aws_iam_role_policy" "ec2" {
 }
 
 resource "aws_iam_role_policy" "autoscaling" {
-  name = "nomad-server-${local.nomad.datacenter}-autoscaling"
+  name = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}-autoscaling"
   role = aws_iam_role.this.name
   policy = jsonencode({
     Version = "2012-10-17"
@@ -54,7 +54,7 @@ resource "aws_iam_role_policy" "autoscaling" {
 }
 
 resource "aws_iam_role_policy" "ssm_bucket" {
-  name = "nomad-server-${local.nomad.datacenter}-ssm-bucket"
+  name = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}-ssm-bucket"
   role = aws_iam_role.this.name
   policy = jsonencode({
     Version = "2012-10-17"
@@ -72,7 +72,7 @@ resource "aws_iam_role_policy" "ssm_bucket" {
 }
 
 resource "aws_iam_role_policy" "secretsmanager" {
-  name = "nomad-server-${local.nomad.datacenter}-secretsmanager"
+  name = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}-secretsmanager"
   role = aws_iam_role.this.name
   policy = jsonencode({
     Version = "2012-10-17"
@@ -84,14 +84,14 @@ resource "aws_iam_role_policy" "secretsmanager" {
           "secretsmanager:ListSecrets"
         ],
         Effect = "Allow"
-        Resource : "arn:aws:secretsmanager:*:*:secret:nomad-server-${local.nomad.datacenter}-*"
+        Resource : "arn:aws:secretsmanager:*:*:secret:nomad-server-${local.nomad.region}-${local.nomad.datacenter}-*"
       }
     ]
   })
 }
 
 resource "aws_iam_instance_profile" "this" {
-  name = "nomad-server-${local.nomad.datacenter}"
+  name = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}"
   role = aws_iam_role.this.name
 
   depends_on = [

@@ -2,9 +2,9 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.5.2"
 
-  create_vpc = var.aws_create_vpc
+  create_vpc = true
 
-  name               = "nomad-server-${local.nomad.datacenter}"
+  name               = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}"
   cidr               = local.vpc_cidr
   azs                = local.azs
   enable_nat_gateway = true
@@ -29,7 +29,7 @@ module "acm" {
 
   create_certificate = true
 
-  domain_name = "nomad-${local.nomad.datacenter}.${data.aws_route53_zone.this.name}"
+  domain_name = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}.${data.aws_route53_zone.this.name}"
 
   zone_id             = var.aws_zone_id
   validation_method   = "DNS"
@@ -42,7 +42,7 @@ module "alb" {
 
   create = true
 
-  name                 = "nomad-server-${local.nomad.datacenter}"
+  name                 = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}"
   vpc_id               = local.aws_vpc_id
   subnets              = module.vpc.public_subnets
   preserve_host_header = true
@@ -65,7 +65,7 @@ module "alb" {
 }
 
 resource "aws_lb_target_group" "this" {
-  name        = "nomad-server-${local.nomad.datacenter}"
+  name        = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}"
   port        = 4646
   protocol    = "HTTPS"
   vpc_id      = local.aws_vpc_id
@@ -99,7 +99,7 @@ module "security_group" {
 
   create = true
 
-  name   = "nomad-server-${local.nomad.datacenter}"
+  name   = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}"
   vpc_id = local.aws_vpc_id
 }
 
@@ -109,7 +109,7 @@ module "autoscaling" {
 
   create = true
 
-  name                        = "nomad-server-${local.nomad.datacenter}"
+  name                        = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}"
   update_default_version      = true
   min_size                    = local.nomad.bootstrap_expect
   max_size                    = local.nomad.bootstrap_expect * 3
@@ -137,11 +137,13 @@ module "autoscaling" {
     ebs = {
       delete_on_termination = true
       encrypted             = true
-      volume_size           = 20
+      volume_size           = 50
       volume_type           = "gp3"
     }
   }]
   tags = merge(var.aws_default_tags, {
+    NomadRetryJoin  = "${local.nomad.region}-${local.nomad.datacenter}"
+    NomadRegion     = local.nomad.region
     NomadDatacenter = local.nomad.datacenter
     NomadType       = "server"
     SSMBucketName   = module.ssm_bucket.s3_bucket_id
@@ -172,7 +174,7 @@ module "ssm_bucket" {
 
   create_bucket = true
 
-  bucket                   = "nomad-server-${local.nomad.datacenter}-${random_string.ssm_bucket_suffix.result}"
+  bucket                   = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}-${random_string.ssm_bucket_suffix.result}"
   acl                      = "private"
   control_object_ownership = true
   object_ownership         = "ObjectWriter"
@@ -188,7 +190,7 @@ resource "aws_s3_object" "nomad_script" {
 
 resource "aws_route53_record" "external" {
   zone_id = var.aws_zone_id
-  name    = "nomad-${local.nomad.datacenter}.${data.aws_route53_zone.this.name}"
+  name    = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}.${data.aws_route53_zone.this.name}"
   type    = "A"
   alias {
     name                   = module.alb.dns_name

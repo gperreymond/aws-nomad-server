@@ -1,5 +1,5 @@
 resource "aws_ssm_document" "this" {
-  name          = "nomad-server-${local.nomad.datacenter}"
+  name          = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}"
   document_type = "Command"
 
   content = <<DOC
