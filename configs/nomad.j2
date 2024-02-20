@@ -26,7 +26,12 @@ server {
   }
 }
 client {
-  enabled = false
+  enabled = true
+  meta {
+    NodeRegion      = "{{region}}"
+    NodeDatacenter  = "{{datacenter}}"
+    NodeType        = "ControlPlane"
+  }
 }
 tls {
   http                   = true
