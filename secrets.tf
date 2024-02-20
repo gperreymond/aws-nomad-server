@@ -30,6 +30,8 @@ resource "aws_secretsmanager_secret_version" "envs" {
     merge({
       NOMAD_VERSION       = local.nomad.version
       CNI_PLUGINS_VERSION = var.cni_plugins_version
+      NOMAD_REGION        = local.nomad.region
+      NOMAD_DATACENTER    = local.nomad.datacenter
       }, local.consul.enabled == true ? {
       CONSUL_VERSION = local.consul.version
       } : {}

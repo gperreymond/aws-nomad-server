@@ -41,6 +41,28 @@ done
 
 CNI_PLUGINS_VERSION="$(cat /home/ssm-user/nomad/envs/CNI_PLUGINS_VERSION)"
 NOMAD_VERSION="$(cat /home/ssm-user/nomad/envs/NOMAD_VERSION)"
+NOMAD_REGION="$(cat /home/ssm-user/nomad/envs/NOMAD_REGION)"
+NOMAD_DATACENTER="$(cat /home/ssm-user/nomad/envs/NOMAD_DATACENTER)"
+
+echo ""
+echo "============================================================="
+echo "[INFO] NOMAD_VERSION.................. $NOMAD_VERSION"
+echo "[INFO] CNI_PLUGINS_VERSION............ $CNI_PLUGINS_VERSION"
+echo "[INFO] NOMAD_REGION................... $NOMAD_REGION"
+echo "[INFO] NOMAD_DATACENTER............... $NOMAD_DATACENTER"
+echo "============================================================="
+echo ""
+
+echo "[INFO] start initialization docker"
+sudo apt-get install -y ca-certificates curl gnupg lsb-release
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --batch --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+sudo groupadd docker
+sudo usermod -aG docker $USER
 
 echo "[INFO] install hashi-up"
 curl -sLS https://get.hashi-up.dev | sh

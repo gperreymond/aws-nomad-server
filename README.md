@@ -19,6 +19,7 @@ $ .wtf/install-dependencies.sh
 ## How to use terragrunt
 
 ```sh
+$ nomad-pack registry add default github.com/hashicorp/nomad-pack-community-registry
 # linter
 $ .wtf/linter.sh
 # how to generate certificats?
