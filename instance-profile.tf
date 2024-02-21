@@ -43,9 +43,13 @@ resource "aws_iam_role_policy" "autoscaling" {
     Version = "2012-10-17"
     Statement = [
       {
-        Action = [
-          "autoscaling:*",
-        ]
+        Action : [
+          "autoscaling:UpdateAutoScalingGroup",
+          "autoscaling:DescribeScalingActivities",
+          "autoscaling:DescribeAutoScalingGroups",
+          "autoscaling:CreateOrUpdateTags",
+          "autoscaling:TerminateInstanceInAutoScalingGroup"
+        ],
         Effect   = "Allow"
         Resource = "*"
       }

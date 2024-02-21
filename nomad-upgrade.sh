@@ -38,7 +38,6 @@ echo "[INFO] nomad_datacenter............ $nomad_datacenter"
 echo "============================================================="
 echo ""
 
-
 # get all instances ids from tags
 echo "[INFO] try to find instances..."
 instance_ids=$(aws ec2 describe-instances --region $aws_region \

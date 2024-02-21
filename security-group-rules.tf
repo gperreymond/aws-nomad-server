@@ -4,6 +4,30 @@ resource "aws_vpc_security_group_egress_rule" "nomad_egress" {
   ip_protocol       = "-1"
 }
 
+resource "aws_vpc_security_group_ingress_rule" "internal_nomad_ingress_services_80" {
+  security_group_id = module.security_group.security_group_id
+  cidr_ipv4         = local.vpc_cidr
+  from_port         = 80
+  ip_protocol       = "tcp"
+  to_port           = 80
+}
+
+resource "aws_vpc_security_group_ingress_rule" "internal_nomad_ingress_services_tcp" {
+  security_group_id = module.security_group.security_group_id
+  cidr_ipv4         = local.vpc_cidr
+  from_port         = 20000
+  ip_protocol       = "tcp"
+  to_port           = 32000
+}
+
+resource "aws_vpc_security_group_ingress_rule" "internal_nomad_ingress_services_udp" {
+  security_group_id = module.security_group.security_group_id
+  cidr_ipv4         = local.vpc_cidr
+  from_port         = 20000
+  ip_protocol       = "udp"
+  to_port           = 32000
+}
+
 resource "aws_vpc_security_group_ingress_rule" "internal_nomad_ingress_4646_tcp" {
   security_group_id = module.security_group.security_group_id
   cidr_ipv4         = local.vpc_cidr
