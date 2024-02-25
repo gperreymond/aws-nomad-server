@@ -1,0 +1,23 @@
+{
+  "name": "nomad-proxy",
+  "version": "1.0.0",
+  "scripts": {
+    "standard": "standard",
+    "start": "moleculer-runner --repl --hot --config moleculer.config.js services"
+  },
+  "dependencies": {
+    "@apollo/server": "4.10.0",
+    "axios": "1.6.7",
+    "fs-extra": "11.2.0",
+    "graphql": "16.8.1",
+    "lodash": "4.17.21",
+    "moleculer": "0.14.32",
+    "moleculer-repl": "0.7.4",
+    "moleculer-web": "0.10.7",
+    "nconf": "0.12.1",
+    "uuid": "9.0.1"
+  },
+  "devDependencies": {
+    "standard": "17.1.0"
+  }
+}

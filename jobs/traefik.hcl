@@ -1,11 +1,5 @@
 job "traefik" {
-  region      = "europe"
-  datacenters = ["infra"]
   type        = "system"
-  constraint {
-    attribute = "${meta.NodeType}"
-    value     = "ControlPlane"
-  }
   group "traefik" {
     count = 1
     network {
@@ -48,14 +42,10 @@ providers:
     - 'default'
     - 'debug'
     endpoint:
-      address: 'https://{{ env "NOMAD_HOST_IP_http" }}:4646'
-      token: '8c65b85c-706d-5f16-ab52-7e2031390216'
-      tls:
-        insecureSkipVerify: true
+      address: 'http://192.168.1.103:4646'
 EOF
         destination = "local/traefik.yaml"
       }
-
       resources {
         cpu    = 100
         memory = 128

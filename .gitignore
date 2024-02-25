@@ -1,4 +1,11 @@
-.terraform.lock.hcl
-
-.terragrunt-cache
+bin
 bootstrap.json
+
+.terraform.lock.hcl
+.terragrunt-cache
+
+cache
+node_modules
+nconf.json
+yarn.lock
+yarn-error.log

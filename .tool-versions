@@ -5,3 +5,5 @@ nomad 1.7.5
 nomad-pack 0.1.0
 terraform 1.7.3
 terragrunt 0.55.1
+nodejs 20.11.1
+yarn 1.22.19

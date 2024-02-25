@@ -7,5 +7,7 @@ asdf plugin add nomad
 asdf plugin add nomad-pack
 asdf plugin add terraform
 asdf plugin add terragrunt
+asdf plugin add nodejs
+asdf plugin add yarn
 
 asdf install
