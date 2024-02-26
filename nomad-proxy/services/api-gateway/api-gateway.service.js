@@ -1,6 +1,6 @@
 const WebMixin = require('moleculer-web')
 
-const { moleculer: { port } } = require('../application.config')
+const { moleculer: { port } } = require('../../application.config')
 
 module.exports = {
   name: 'api-gateway',

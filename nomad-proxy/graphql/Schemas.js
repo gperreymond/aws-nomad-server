@@ -11,4 +11,12 @@ module.exports = `
     Namespace: Namespace!
     Status: String!
   }
+  type Node {
+    ID: ID!
+    Name: String!
+    NodeClass: String!
+    Address: String!
+    Status: String!
+    Jobs: [Job]!
+  }
 `
