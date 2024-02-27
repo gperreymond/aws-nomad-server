@@ -21,7 +21,6 @@ const handler = async function (ctx) {
         Status: job.Status
       }
     })
-    console.log(data)
     return data
   } catch (e) {
     /* istanbul ignore next */
