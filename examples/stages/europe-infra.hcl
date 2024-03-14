@@ -6,6 +6,7 @@ locals {
     aws_default_tags = {
       ManagedBy = "Terraform"
     }
+    nomad_version    = "1.7.6"
     nomad_region     = "europe"
     nomad_datacenter = "infra"
   }

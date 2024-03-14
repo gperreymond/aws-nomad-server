@@ -25,7 +25,7 @@ module "vpc" {
 
 module "acm" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "5.0.0"
+  version = "5.0.1"
 
   create_certificate = true
 
@@ -38,7 +38,7 @@ module "acm" {
 
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
-  version = "9.7.0"
+  version = "9.8.0"
 
   create = true
 
@@ -103,44 +103,61 @@ module "security_group" {
   vpc_id = local.aws_vpc_id
 }
 
-module "autoscaling" {
-  source  = "terraform-aws-modules/autoscaling/aws"
-  version = "7.3.1"
+resource "aws_ebs_volume" "nomad_servers" {
+  count = local.nomad.bootstrap_expect
 
-  create = true
+  availability_zone = element(local.azs, count.index % 3)
+  size              = 50
+  encrypted         = true
+  type              = "gp3"
+}
+
+resource "aws_volume_attachment" "nomad_servers" {
+  count = local.nomad.bootstrap_expect
+
+  device_name = "/dev/sdh"
+  volume_id   = aws_ebs_volume.nomad_servers[count.index].id
+  instance_id = module.nomad_servers[count.index].id
+}
+
+module "nomad_servers" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "5.6.1"
+
+  count = local.nomad.bootstrap_expect
 
   name                        = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}"
-  update_default_version      = true
-  min_size                    = local.nomad.bootstrap_expect
-  max_size                    = local.nomad.bootstrap_expect * 3
-  ebs_optimized               = true
-  enable_monitoring           = true
-  image_id                    = data.aws_ami.latest_ubuntu.id
+  ami                         = "ami-04af9f2b8c2306b1a" // data.aws_ami.latest_ubuntu.id
   instance_type               = var.aws_instance_type
-  vpc_zone_identifier         = module.vpc.private_subnets
-  create_iam_instance_profile = false
-  iam_instance_profile_arn    = aws_iam_instance_profile.this.arn
+  associate_public_ip_address = false
+  user_data_replace_on_change = false
   user_data                   = filebase64("${path.module}/configs/cloudconfig.yaml")
+  create_iam_instance_profile = false
+  iam_instance_profile        = aws_iam_instance_profile.this.name
+  vpc_security_group_ids      = [module.security_group.security_group_id]
+  monitoring                  = true
+  ebs_optimized               = true
+  availability_zone           = element(local.azs, count.index % 3)
+  subnet_id                   = element(module.vpc.private_subnets, count.index % 3)
   metadata_options = {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
     http_put_response_hop_limit = 1
     instance_metadata_tags      = "enabled"
   }
-  security_groups                  = [module.security_group.security_group_id]
-  create_traffic_source_attachment = true
-  traffic_source_identifier        = aws_lb_target_group.this.arn
-  block_device_mappings = [{
-    # Root volume
-    device_name = "/dev/xvda"
-    no_device   = 0
-    ebs = {
-      delete_on_termination = true
-      encrypted             = true
-      volume_size           = 50
-      volume_type           = "gp3"
-    }
-  }]
+  instance_tags = merge(var.aws_default_tags, {
+    NomadRetryJoin  = "${local.nomad.region}-${local.nomad.datacenter}"
+    NomadRegion     = local.nomad.region
+    NomadDatacenter = local.nomad.datacenter
+    NomadType       = "server"
+    SSMBucketName   = module.ssm_bucket.s3_bucket_id
+    SSMBucketPath   = "scripts/nomad.sh"
+  })
+  volume_tags = merge(var.aws_default_tags, {
+    NomadRegion     = local.nomad.region
+    NomadDatacenter = local.nomad.datacenter
+    NomadType       = "server"
+  })
   tags = merge(var.aws_default_tags, {
     NomadRetryJoin  = "${local.nomad.region}-${local.nomad.datacenter}"
     NomadRegion     = local.nomad.region
@@ -160,6 +177,14 @@ module "autoscaling" {
     aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4648_tcp,
     aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4648_udp
   ]
+}
+
+resource "aws_lb_target_group_attachment" "nomad_servers" {
+  count = local.nomad.bootstrap_expect
+
+  target_group_arn = aws_lb_target_group.this.arn
+  target_id        = module.nomad_servers[count.index].id
+  port             = 4646
 }
 
 resource "random_string" "ssm_bucket_suffix" {

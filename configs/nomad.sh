@@ -1,5 +1,26 @@
 #!/bin/bash
 
+echo "[INFO] prepare device"
+DEVICE="/dev/nvme1n1"
+PARTITIONED=$(lsblk "$DEVICE" | grep "part" | wc -l)
+if [ "$PARTITIONED" = "1" ]; then
+    echo "[WARN] devide already partitioned!"
+else
+  fdisk /dev/nvme1n1 <<EOF
+n
+p
+1
+
+
+w
+EOF
+  sleep 5
+  mkfs.ext4 "${DEVICE}p1"
+fi
+mkdir /mnt/nomad
+mount "${DEVICE}p1" /mnt/nomad
+chown -R $USER:$USER /mnt/nomad
+
 echo "[INFO] prepare node"
 mkdir -p /home/ssm-user/nomad/certs
 mkdir -p /home/ssm-user/nomad/envs

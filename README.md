@@ -2,8 +2,13 @@
 
 ## Documentations
 
+### Nomad
 * https://developer.hashicorp.com/nomad/tutorials/transport-security/security-enable-tls
+* https://developer.hashicorp.com/nomad/tutorials/manage-clusters/outage-recovery
+
+### Terraform
 * https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest
+* https://registry.terraform.io/modules/terraform-aws-modules/ec2-instance/aws/latest
 * https://registry.terraform.io/modules/terraform-aws-modules/autoscaling/aws/latest
 * https://registry.terraform.io/modules/terraform-aws-modules/s3-bucket/aws/latest
 * https://registry.terraform.io/modules/terraform-aws-modules/security-group/aws/latest
