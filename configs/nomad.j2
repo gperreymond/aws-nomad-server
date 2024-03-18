@@ -28,9 +28,26 @@ server {
 client {
   enabled = true
   meta {
-    NodeRegion      = "{{region}}"
-    NodeDatacenter  = "{{datacenter}}"
-    NodeType        = "ControlPlane"
+    NodeRegion          = "{{region}}"
+    NodeDatacenter      = "{{datacenter}}"
+    NodeType            = "ControlPlane"
+    EtcdNodeName        = "[[ETCD_NODE_NAME]]"
+    EtcdNodeIp          = "[[ETCD_NODE_IP]]"
+    EtcdInitialCluster  = "[[ETCD_INITIAL_CLUSTER]]"
+  }
+}
+plugin "raw_exec" {
+  config {
+    enabled = true
+  }
+}
+plugin "docker" {
+  config {
+    allow_privileged = true
+    allow_caps       = ["all"]
+    volumes {
+      enabled      = true
+    }
   }
 }
 tls {

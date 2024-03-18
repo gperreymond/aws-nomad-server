@@ -127,7 +127,7 @@ module "nomad_servers" {
   count = local.nomad.bootstrap_expect
 
   name                        = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}"
-  ami                         = "ami-04af9f2b8c2306b1a" // data.aws_ami.latest_ubuntu.id
+  ami                         = data.aws_ami.latest_ubuntu.id
   instance_type               = var.aws_instance_type
   associate_public_ip_address = false
   user_data_replace_on_change = false
@@ -170,7 +170,8 @@ module "nomad_servers" {
   depends_on = [
     # instance profile
     aws_iam_instance_profile.this,
-    # security group
+    # security group 
+    # TOTO: null_resource
     aws_vpc_security_group_egress_rule.nomad_egress,
     aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4646_tcp,
     aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4647_tcp,
@@ -213,7 +214,7 @@ resource "aws_s3_object" "nomad_script" {
   source_hash = filemd5("${path.module}/configs/nomad.sh")
 }
 
-resource "aws_route53_record" "external" {
+resource "aws_route53_record" "nomad" {
   zone_id = var.aws_zone_id
   name    = "nomad-server-${local.nomad.region}-${local.nomad.datacenter}.${data.aws_route53_zone.this.name}"
   type    = "A"

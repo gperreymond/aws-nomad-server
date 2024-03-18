@@ -27,8 +27,8 @@ mkdir -p /home/ssm-user/nomad/envs
 mkdir -p /home/ssm-user/nomad/configs
 sudo apt update
 
-echo "[INFO] install jq"
-sudo apt install -y jq
+echo "[INFO] install tools"
+sudo apt install -y jq net-tools iputils-ping
 
 TOKEN=`curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"`
 INSTANCE_ID=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
@@ -100,3 +100,4 @@ echo "[INFO] install nomad"
 hashi-up nomad install --local --version $NOMAD_VERSION --config-file /home/ssm-user/nomad/configs/nomad_config_hcl
 nomad version
 sudo service nomad restart
+

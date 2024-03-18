@@ -15,5 +15,13 @@ output "nomad_datacenter" {
 }
 
 output "nomad_address" {
-  value = "https://${aws_route53_record.external.name}"
+  value = "https://${aws_route53_record.nomad.name}"
+}
+
+output "nomad_etcd" {
+  value = { for idx, instance in module.nomad_servers : instance.private_ip => {
+    node_name       = "etcd-node-${idx}"
+    node_ip         = instance.private_ip
+    initial_cluster = join(",", [for idx, instance in module.nomad_servers : "etcd-node-${idx}=http://${instance.private_ip}:2380"])
+  } }
 }
