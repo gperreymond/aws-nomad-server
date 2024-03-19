@@ -7,10 +7,5 @@ locals {
     datacenter       = var.nomad_datacenter
     bootstrap_expect = var.nomad_bootstrap_expect
   }
-  consul = {
-    enabled    = var.consul_enabled
-    version    = var.consul_version
-    datacenter = var.consul_datacenter
-  }
   aws_vpc_id = module.vpc.vpc_id
 }

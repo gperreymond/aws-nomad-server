@@ -12,5 +12,9 @@ terraform {
       source  = "NikolaLohinski/jinja"
       version = "1.17.0"
     }
+    null = {
+      source  = "hashicorp/null"
+      version = "3.2.2"
+    }
   }
 }

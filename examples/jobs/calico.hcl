@@ -1,17 +1,23 @@
-job "flannel-network" {
+job "calico-network" {
   type = "system"
-  group "flannel" {
-    task "flanneld" {
+  group "calico-node" {
+    task "calico-node" {
       driver = "docker"
       config {
-        image = "docker.io/flannel/flannel:v0.24.3"
+        image = "calico/node:v3.27.2"
         args = [
-          "-iface=${NODE_IP}",
-          "-etcd-endpoints=${ETCD_ENDPOINTS}"
+          "-felix"
         ]
         auth_soft_fail = true
         privileged     = true
         network_mode   = "host"
+        volumes = [
+          "/var/log/calico:/var/log/calico",
+          "/var/lib/calico:/var/lib/calico",
+          "/var/run/calico:/var/run/calico",
+          "/run/docker/plugins:/run/docker/plugins",
+          "/lib/modules:/lib/modules"
+        ]
       }
       resources {
         cpu    = 100

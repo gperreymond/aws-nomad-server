@@ -19,7 +19,7 @@ output "nomad_address" {
 }
 
 output "nomad_etcd" {
-  value = { for idx, instance in module.nomad_servers : instance.private_ip => {
+  value = { for idx, instance in module.nomad_servers : instance.id => {
     node_name       = "etcd-node-${idx}"
     node_ip         = instance.private_ip
     initial_cluster = join(",", [for idx, instance in module.nomad_servers : "etcd-node-${idx}=http://${instance.private_ip}:2380"])

@@ -46,13 +46,13 @@ job "etcd-cluster" {
 ETCDCTL_API="3"
 ETCD_DATA_DIR="/etcd_data"
 ETCD_NAME="{{ env "meta.EtcdNodeName" }}"
-ETCD_INITIAL_ADVERTISE_PEER_URLS="http://{{ env "attr.unique.network.ip-address" }}:2380"
+ETCD_INITIAL_ADVERTISE_PEER_URLS="http://{{ env "meta.EtcdNodeIp" }}:2380"
 ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
-ETCD_ADVERTISE_CLIENT_URLS="http://{{ env "attr.unique.network.ip-address" }}:2379"
+ETCD_ADVERTISE_CLIENT_URLS="http://{{ env "meta.EtcdNodeIp" }}:2379"
 ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"
 ETCD_INITIAL_CLUSTER_STATE="new"
 ETCD_INITIAL_CLUSTER_TOKEN="2a0d490d-23b2-474b-a88f-d46301e9c83c"
-ETCD_INITIAL_CLUSTER="{{ env "" }}"
+ETCD_INITIAL_CLUSTER="{{ env "meta.EtcdInitialCluster" }}"
 EOF
       }
       identity {

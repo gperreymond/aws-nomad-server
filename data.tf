@@ -29,13 +29,3 @@ encrypt: "${random_id.gossip_encryption_key.b64_std}"
 EOF
   }
 }
-
-data "jinja_template" "consul_config_hcl" {
-  template = "${path.module}/configs/consul.j2"
-  context {
-    type = "yaml"
-    data = <<-EOF
-datacenter: "${local.consul.datacenter}"
-EOF
-  }
-}

@@ -171,12 +171,7 @@ module "nomad_servers" {
     # instance profile
     aws_iam_instance_profile.this,
     # security group 
-    # TOTO: null_resource
-    aws_vpc_security_group_egress_rule.nomad_egress,
-    aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4646_tcp,
-    aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4647_tcp,
-    aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4648_tcp,
-    aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4648_udp
+    null_resource.security_group_rules
   ]
 }
 

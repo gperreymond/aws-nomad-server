@@ -92,3 +92,17 @@ resource "aws_vpc_security_group_ingress_rule" "internal_vxlan_ingress_4789_udp"
   ip_protocol       = "udp"
   to_port           = 4789
 }
+
+resource "null_resource" "security_group_rules" {
+  depends_on = [
+    aws_vpc_security_group_egress_rule.nomad_egress,
+    aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4646_tcp,
+    aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4647_tcp,
+    aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4648_tcp,
+    aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4648_udp,
+    aws_vpc_security_group_ingress_rule.internal_etcd_ingress_2379_tcp,
+    aws_vpc_security_group_ingress_rule.internal_etcd_ingress_2380_tcp,
+    aws_vpc_security_group_ingress_rule.internal_vxlan_ingress_4789_tcp,
+    aws_vpc_security_group_ingress_rule.internal_vxlan_ingress_4789_udp
+  ]
+}

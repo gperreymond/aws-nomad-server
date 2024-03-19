@@ -44,17 +44,3 @@ variable "nomad_bootstrap_expect" {
   type    = number
   default = 3
 }
-
-variable "consul_enabled" {
-  type    = bool
-  default = false
-}
-variable "consul_version" {
-  type    = string
-  default = "1.17.2"
-}
-
-variable "consul_datacenter" {
-  type    = string
-  default = "dc1"
-}

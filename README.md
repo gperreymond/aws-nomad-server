@@ -5,14 +5,12 @@
 ### Nomad
 
 > Network  
-* https://www.hashicorp.com/resources/running-cilium-with-nomad
-* https://cosmonic.com/blog/engineering/netreap-a-practical-guide-to-running-cilium-in-nomad
-* https://github.com/cosmonic-labs/netreap
 * https://medium.com/be-tech-with-santander/using-docker-overlay-networks-configuration-guide-526b469befa4
 * https://docker-k8s-lab.readthedocs.io/en/latest/docker/docker-flannel.html
 * https://github.com/flannel-io/flannel/blob/master/Documentation/running.md
 * https://www.linkedin.com/pulse/docker-networking-unleashing-power-overlay-networks-abdelrazek-1gmhf
 * https://medium.com/@nobelrakib03/multi-container-host-networking-using-vxlan-overlay-network-c2ae7dc75c2c
+* https://docs.tigera.io/calico/latest/getting-started/bare-metal/installation/container
 
 > Common 
 * https://developer.hashicorp.com/nomad/tutorials/transport-security/security-enable-tls
@@ -47,4 +45,25 @@ $ terragrunt "[plan|apply|destroy|etc...]" --terragrunt-config examples/stages/e
 $ ./nomad-upgrade.sh -stage examples/stages/europe-infra.hcl
 # how to bootstrap nomad servers?
 $ ./nomad-bootstrap.sh -stage examples/stages/europe-infra.hcl
+```
+
+## Flannel: Network overlay
+
+```sh
+$ wget https://github.com/coreos/flannel/releases/download/v0.6.2/flanneld-amd64 -O flanneld
+$ chmod +x flanneld
+$ mv flanneld /usr/local/bin
+$ cat > flannel-network-config.json
+{
+    "Network": "10.0.0.0/8",
+    "SubnetLen": 20,
+    "SubnetMin": "10.10.0.0",
+    "SubnetMax": "10.99.0.0",
+    "Backend": {
+        "Type": "vxlan",
+        "VNI": 100,
+        "Port": 8472
+    }
+}
+EOF
 ```

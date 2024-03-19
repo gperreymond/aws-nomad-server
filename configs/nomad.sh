@@ -25,6 +25,7 @@ echo "[INFO] prepare node"
 mkdir -p /home/ssm-user/nomad/certs
 mkdir -p /home/ssm-user/nomad/envs
 mkdir -p /home/ssm-user/nomad/configs
+mkdir -p /home/ssm-user/nomad/etcd
 sudo apt update
 
 echo "[INFO] install tools"
@@ -40,7 +41,7 @@ echo "[INFO] get all nomad certs"
 json_string=$(aws secretsmanager get-secret-value --secret-id "$NAME_TAG-certs" | jq -r '.SecretString')
 keys=$(echo "$json_string" | jq -r 'keys[]')
 for key in $keys; do
-  value=$(echo "$json_string" | jq -r ".$key")
+  value=$(echo "$json_string" | jq -r ".\"$key\"")
   echo "$value" > "/home/ssm-user/nomad/certs/$key"
 done
 
@@ -48,15 +49,23 @@ echo "[INFO] get all nomad configs"
 json_string=$(aws secretsmanager get-secret-value --secret-id "$NAME_TAG-configs" | jq -r '.SecretString')
 keys=$(echo "$json_string" | jq -r 'keys[]')
 for key in $keys; do
-  value=$(echo "$json_string" | jq -r ".$key")
+  value=$(echo "$json_string" | jq -r ".\"$key\"")
   echo "$value" > "/home/ssm-user/nomad/configs/$key"
+done
+
+echo "[INFO] get all nomad etcd"
+json_string=$(aws secretsmanager get-secret-value --secret-id "$NAME_TAG-etcd" | jq -r '.SecretString')
+keys=$(echo "$json_string" | jq -r 'keys[]')
+for key in $keys; do
+  value=$(echo "$json_string" | jq -r ".\"$key\"")
+  echo "$value" > "/home/ssm-user/nomad/etcd/$key"
 done
 
 echo "[INFO] get all nomad envs"
 json_string=$(aws secretsmanager get-secret-value --secret-id "$NAME_TAG-envs" | jq -r '.SecretString')
 keys=$(echo "$json_string" | jq -r 'keys[]')
 for key in $keys; do
-  value=$(echo "$json_string" | jq -r ".$key")
+  value=$(echo "$json_string" | jq -r ".\"$key\"")
   echo "$value" > "/home/ssm-user/nomad/envs/$key"
 done
 
@@ -64,6 +73,30 @@ CNI_PLUGINS_VERSION="$(cat /home/ssm-user/nomad/envs/CNI_PLUGINS_VERSION)"
 NOMAD_VERSION="$(cat /home/ssm-user/nomad/envs/NOMAD_VERSION)"
 NOMAD_REGION="$(cat /home/ssm-user/nomad/envs/NOMAD_REGION)"
 NOMAD_DATACENTER="$(cat /home/ssm-user/nomad/envs/NOMAD_DATACENTER)"
+
+echo "[INFO] prepare etcd meta"
+ETCD_NODE_NAME="$(cat nomad/etcd/$INSTANCE_ID | jq -r '.NODE_NAME')"
+ETCD_NODE_IP="$(cat nomad/etcd/$INSTANCE_ID | jq -r '.NODE_IP')"
+ETCD_INITIAL_CLUSTER="$(cat nomad/etcd/$INSTANCE_ID | jq -r '.INITIAL_CLUSTER')"
+if [ -z "$ETCD_NODE_NAME" ]; then
+    echo "[ERROR] ETCD_NODE_NAME is mandatory!"
+    exit 1
+fi
+if [ -z "$ETCD_NODE_IP" ]; then
+    echo "[ERROR] ETCD_NODE_IP is mandatory!"
+    exit 1
+fi
+if [ -z "$ETCD_INITIAL_CLUSTER" ]; then
+    echo "[ERROR] ETCD_INITIAL_CLUSTER is mandatory!"
+    exit 1
+fi
+ETCD_NODE_NAME_ESCAPED=$(sed 's/[\/&]/\\&/g' <<< "$ETCD_NODE_NAME")
+ETCD_NODE_IP_ESCAPED=$(sed 's/[\/&]/\\&/g' <<< "$ETCD_NODE_IP")
+ETCD_INITIAL_CLUSTER_ESCAPED=$(sed 's/[\/&]/\\&/g' <<< "$ETCD_INITIAL_CLUSTER")
+
+sed -i "s|ETCD_NODE_NAME|$ETCD_NODE_NAME_ESCAPED|g" /home/ssm-user/nomad/configs/nomad_config_hcl
+sed -i "s|ETCD_NODE_IP|$ETCD_NODE_IP_ESCAPED|g" /home/ssm-user/nomad/configs/nomad_config_hcl
+sed -i "s|ETCD_INITIAL_CLUSTER|$ETCD_INITIAL_CLUSTER_ESCAPED|g" /home/ssm-user/nomad/configs/nomad_config_hcl
 
 echo ""
 echo "============================================================="
