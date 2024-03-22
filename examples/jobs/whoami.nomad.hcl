@@ -1,10 +1,17 @@
 job "whoami" {
   group "whoami" {
-    count = 1
+    count = 3
     network {
+      mode = "cni/nomad-overlay"
       port "http" {
-        to = 80
+        static       = 80
+        host_network = "nomad-overlay"
       }
+    }
+    service {
+      name     = "whoami-http"
+      provider = "nomad"
+      port     = "http"
     }
     task "whoami" {
       driver = "docker"
@@ -12,12 +19,6 @@ job "whoami" {
         image          = "traefik/whoami:v1.10.1"
         ports          = ["http"]
         auth_soft_fail = true
-        network_mode   = "bridge"
-      }
-      service {
-        name     = "whoami-http"
-        provider = "nomad"
-        port     = "http"
       }
       identity {
         env  = true

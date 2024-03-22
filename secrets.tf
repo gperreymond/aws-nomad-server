@@ -42,9 +42,10 @@ resource "aws_secretsmanager_secret_version" "etcd" {
   secret_id = aws_secretsmanager_secret.etcd.id
   secret_string = jsonencode(
     { for idx, instance in module.nomad_servers : instance.id => {
-      NODE_NAME       = "etcd-node-${idx}"
-      NODE_IP         = instance.private_ip
-      INITIAL_CLUSTER = join(",", [for idx, instance in module.nomad_servers : "etcd-node-${idx}=http://${instance.private_ip}:2380"])
+      NODE_NAME         = "etcd-node-${idx}"
+      NODE_IP           = instance.private_ip
+      INITIAL_CLUSTER   = join(",", [for idx, instance in module.nomad_servers : "etcd-node-${idx}=http://${instance.private_ip}:2380"])
+      CLUSTER_ENDPOINTS = join(",", [for idx, instance in module.nomad_servers : "http://${instance.private_ip}:2380"])
     } }
   )
 }

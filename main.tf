@@ -145,7 +145,7 @@ module "nomad_servers" {
     http_put_response_hop_limit = 1
     instance_metadata_tags      = "enabled"
   }
-  instance_tags = merge(var.aws_default_tags, {
+  instance_tags = merge(local.default_tags, {
     NomadRetryJoin  = "${local.nomad.region}-${local.nomad.datacenter}"
     NomadRegion     = local.nomad.region
     NomadDatacenter = local.nomad.datacenter
@@ -153,12 +153,12 @@ module "nomad_servers" {
     SSMBucketName   = module.ssm_bucket.s3_bucket_id
     SSMBucketPath   = "scripts/nomad.sh"
   })
-  volume_tags = merge(var.aws_default_tags, {
+  volume_tags = merge(local.default_tags, {
     NomadRegion     = local.nomad.region
     NomadDatacenter = local.nomad.datacenter
     NomadType       = "server"
   })
-  tags = merge(var.aws_default_tags, {
+  tags = merge(local.default_tags, {
     NomadRetryJoin  = "${local.nomad.region}-${local.nomad.datacenter}"
     NomadRegion     = local.nomad.region
     NomadDatacenter = local.nomad.datacenter

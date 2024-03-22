@@ -75,9 +75,10 @@ NOMAD_REGION="$(cat /home/ssm-user/nomad/envs/NOMAD_REGION)"
 NOMAD_DATACENTER="$(cat /home/ssm-user/nomad/envs/NOMAD_DATACENTER)"
 
 echo "[INFO] prepare etcd meta"
-ETCD_NODE_NAME="$(cat nomad/etcd/$INSTANCE_ID | jq -r '.NODE_NAME')"
-ETCD_NODE_IP="$(cat nomad/etcd/$INSTANCE_ID | jq -r '.NODE_IP')"
-ETCD_INITIAL_CLUSTER="$(cat nomad/etcd/$INSTANCE_ID | jq -r '.INITIAL_CLUSTER')"
+ETCD_NODE_NAME="$(cat /home/ssm-user/nomad/etcd/$INSTANCE_ID | jq -r '.NODE_NAME')"
+ETCD_NODE_IP="$(cat /home/ssm-user/nomad/etcd/$INSTANCE_ID | jq -r '.NODE_IP')"
+ETCD_INITIAL_CLUSTER="$(cat /home/ssm-user/nomad/etcd/$INSTANCE_ID | jq -r '.INITIAL_CLUSTER')"
+ETCD_CLUSTER_ENDPOINTS="$(cat /home/ssm-user/nomad/etcd/$INSTANCE_ID | jq -r '.CLUSTER_ENDPOINTS')"
 if [ -z "$ETCD_NODE_NAME" ]; then
     echo "[ERROR] ETCD_NODE_NAME is mandatory!"
     exit 1
@@ -93,15 +94,17 @@ fi
 ETCD_NODE_NAME_ESCAPED=$(sed 's/[\/&]/\\&/g' <<< "$ETCD_NODE_NAME")
 ETCD_NODE_IP_ESCAPED=$(sed 's/[\/&]/\\&/g' <<< "$ETCD_NODE_IP")
 ETCD_INITIAL_CLUSTER_ESCAPED=$(sed 's/[\/&]/\\&/g' <<< "$ETCD_INITIAL_CLUSTER")
+ETCD_CLUSTER_ENDPOINTS_ESCAPED=$(sed 's/[\/&]/\\&/g' <<< "$ETCD_CLUSTER_ENDPOINTS")
 
 sed -i "s|ETCD_NODE_NAME|$ETCD_NODE_NAME_ESCAPED|g" /home/ssm-user/nomad/configs/nomad_config_hcl
 sed -i "s|ETCD_NODE_IP|$ETCD_NODE_IP_ESCAPED|g" /home/ssm-user/nomad/configs/nomad_config_hcl
 sed -i "s|ETCD_INITIAL_CLUSTER|$ETCD_INITIAL_CLUSTER_ESCAPED|g" /home/ssm-user/nomad/configs/nomad_config_hcl
+sed -i "s|ETCD_CLUSTER_ENDPOINTS|$ETCD_CLUSTER_ENDPOINTS_ESCAPED|g" /home/ssm-user/nomad/configs/nomad_config_hcl
 
 echo ""
 echo "============================================================="
-echo "[INFO] NOMAD_VERSION.................. $NOMAD_VERSION"
 echo "[INFO] CNI_PLUGINS_VERSION............ $CNI_PLUGINS_VERSION"
+echo "[INFO] NOMAD_VERSION.................. $NOMAD_VERSION"
 echo "[INFO] NOMAD_REGION................... $NOMAD_REGION"
 echo "[INFO] NOMAD_DATACENTER............... $NOMAD_DATACENTER"
 echo "============================================================="
@@ -117,7 +120,7 @@ sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 sudo groupadd docker
 sudo usermod -aG docker $USER
-
+VPC resources on ${var.cluster_name}
 echo "[INFO] install hashi-up"
 curl -sLS https://get.hashi-up.dev | sh
 sudo cp hashi-up /usr/local/bin/hashi-up

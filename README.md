@@ -10,7 +10,6 @@
 * https://github.com/flannel-io/flannel/blob/master/Documentation/running.md
 * https://www.linkedin.com/pulse/docker-networking-unleashing-power-overlay-networks-abdelrazek-1gmhf
 * https://medium.com/@nobelrakib03/multi-container-host-networking-using-vxlan-overlay-network-c2ae7dc75c2c
-* https://docs.tigera.io/calico/latest/getting-started/bare-metal/installation/container
 
 > Common 
 * https://developer.hashicorp.com/nomad/tutorials/transport-security/security-enable-tls
@@ -47,23 +46,17 @@ $ ./nomad-upgrade.sh -stage examples/stages/europe-infra.hcl
 $ ./nomad-bootstrap.sh -stage examples/stages/europe-infra.hcl
 ```
 
-## Flannel: Network overlay
+## Calico: Network overlay
+
+* https://github.com/nekione/calico-nomad/blob/main/docs/main.md#step-6-installing-calicoctl-calico-plugins-and-calico-node
+* https://docs.tigera.io/calico/latest/getting-started/bare-metal/installation/container
+* https://docs.tigera.io/calico/latest/reference/configure-calico-node
+* https://forge.puppet.com/modules/maxadamo/nomad_cni/readme
+
+## Docker Swarm: Network overlay
 
 ```sh
-$ wget https://github.com/coreos/flannel/releases/download/v0.6.2/flanneld-amd64 -O flanneld
-$ chmod +x flanneld
-$ mv flanneld /usr/local/bin
-$ cat > flannel-network-config.json
-{
-    "Network": "10.0.0.0/8",
-    "SubnetLen": 20,
-    "SubnetMin": "10.10.0.0",
-    "SubnetMax": "10.99.0.0",
-    "Backend": {
-        "Type": "vxlan",
-        "VNI": 100,
-        "Port": 8472
-    }
-}
-EOF
+# get swarm status: [active, inactive]
+$ docker info | grep Swarm | cut -d ' ' -f3
 ```
+

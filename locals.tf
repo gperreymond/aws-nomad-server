@@ -8,4 +8,12 @@ locals {
     bootstrap_expect = var.nomad_bootstrap_expect
   }
   aws_vpc_id = module.vpc.vpc_id
+  default_tags = merge(var.aws_default_tags, {
+    NomadRegion      = local.nomad.region
+    NomadDatacenter  = local.nomad.datacenter
+    NomadType        = "server"
+    VantaNonProd     = true
+    VantaDescription = "Proof of Concept"
+    VantaOwner       = "infra@metronlab.com"
+  })
 }

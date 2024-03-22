@@ -36,7 +36,7 @@
 #       volume_type           = "gp3"
 #     }
 #   }]
-#   tags = merge(var.aws_default_tags, {
+#   tags = merge(local.default_tags, {
 #     NomadRetryJoin  = "${local.nomad.region}-${local.nomad.datacenter}"
 #     NomadRegion     = local.nomad.region
 #     NomadDatacenter = local.nomad.datacenter

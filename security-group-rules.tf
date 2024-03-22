@@ -4,6 +4,12 @@ resource "aws_vpc_security_group_egress_rule" "nomad_egress" {
   ip_protocol       = "-1"
 }
 
+resource "aws_vpc_security_group_ingress_rule" "internal_calico_ingress_services_all" {
+  security_group_id = module.security_group.security_group_id
+  cidr_ipv4         = "192.168.0.0/16"
+  ip_protocol       = "-1"
+}
+
 resource "aws_vpc_security_group_ingress_rule" "internal_nomad_ingress_services_80" {
   security_group_id = module.security_group.security_group_id
   cidr_ipv4         = local.vpc_cidr
@@ -77,14 +83,6 @@ resource "aws_vpc_security_group_ingress_rule" "internal_etcd_ingress_2380_tcp" 
   to_port           = 2380
 }
 
-resource "aws_vpc_security_group_ingress_rule" "internal_vxlan_ingress_4789_tcp" {
-  security_group_id = module.security_group.security_group_id
-  cidr_ipv4         = local.vpc_cidr
-  from_port         = 4789
-  ip_protocol       = "tcp"
-  to_port           = 4789
-}
-
 resource "aws_vpc_security_group_ingress_rule" "internal_vxlan_ingress_4789_udp" {
   security_group_id = module.security_group.security_group_id
   cidr_ipv4         = local.vpc_cidr
@@ -93,16 +91,25 @@ resource "aws_vpc_security_group_ingress_rule" "internal_vxlan_ingress_4789_udp"
   to_port           = 4789
 }
 
+resource "aws_vpc_security_group_ingress_rule" "internal_bgp_ingress_179_tcp" {
+  security_group_id = module.security_group.security_group_id
+  cidr_ipv4         = local.vpc_cidr
+  from_port         = 179
+  ip_protocol       = "tcp"
+  to_port           = 179
+}
+
 resource "null_resource" "security_group_rules" {
   depends_on = [
     aws_vpc_security_group_egress_rule.nomad_egress,
+    aws_vpc_security_group_ingress_rule.internal_calico_ingress_services_all,
     aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4646_tcp,
     aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4647_tcp,
     aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4648_tcp,
     aws_vpc_security_group_ingress_rule.internal_nomad_ingress_4648_udp,
     aws_vpc_security_group_ingress_rule.internal_etcd_ingress_2379_tcp,
     aws_vpc_security_group_ingress_rule.internal_etcd_ingress_2380_tcp,
-    aws_vpc_security_group_ingress_rule.internal_vxlan_ingress_4789_tcp,
-    aws_vpc_security_group_ingress_rule.internal_vxlan_ingress_4789_udp
+    aws_vpc_security_group_ingress_rule.internal_vxlan_ingress_4789_udp,
+    aws_vpc_security_group_ingress_rule.internal_bgp_ingress_179_tcp
   ]
 }
