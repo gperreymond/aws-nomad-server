@@ -120,7 +120,7 @@ sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 sudo groupadd docker
 sudo usermod -aG docker $USER
-VPC resources on ${var.cluster_name}
+
 echo "[INFO] install hashi-up"
 curl -sLS https://get.hashi-up.dev | sh
 sudo cp hashi-up /usr/local/bin/hashi-up
